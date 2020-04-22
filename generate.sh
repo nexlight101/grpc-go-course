@@ -1,1 +1,1 @@
-protoc greetpb/greet.proto --go_out=plugins=grpc:..
+protoc greetpb/greet.proto --go_out=plugins=grpc:.
