@@ -35,10 +35,11 @@ func doUnary(c greetpb.GreetServiceClient) {
 	req := &greetpb.GreetRequest{Greeting: &greetpb.Greeting{
 		FirstName: "Hendrik",
 		LastName:  "Pienaar",
-	}}
+	},
+	}
 	res, err := c.Greet(context.Background(), req)
 	if err != nil {
-		fmt.Printf("No response from server: %v\n", err)
+		fmt.Printf("Error while calling Greet RPC: %v\n", err)
 	}
-	fmt.Println(res)
+	fmt.Println(res.GetResult())
 }

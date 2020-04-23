@@ -15,7 +15,7 @@ type server struct{}
 
 // Implement unary server function
 func (*server) Greet(ctx context.Context, req *greetpb.GreetRequest) (*greetpb.GreetResponse, error) {
-	fmt.Println("Request received in server")
+	fmt.Printf("Greet Request received in server %v", req)
 	fullName := req.Greeting.GetFirstName() + " " + req.Greeting.GetLastName()
 	result := "Hello " + fullName
 	res := &greetpb.GreetResponse{
