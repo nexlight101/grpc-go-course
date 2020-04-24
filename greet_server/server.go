@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -11,6 +12,17 @@ import (
 
 // Create a server type
 type server struct{}
+
+// Implement unary server function
+func (*server) Greet(ctx context.Context, req *greetpb.GreetRequest) (*greetpb.GreetResponse, error) {
+	fmt.Printf("Greet Request received in server %v", req)
+	fullName := req.Greeting.GetFirstName() + " " + req.Greeting.GetLastName()
+	result := "Hello " + fullName
+	res := &greetpb.GreetResponse{
+		Result: result,
+	}
+	return res, nil
+}
 
 func main() {
 	fmt.Println("Hello from gRPC-Server")
