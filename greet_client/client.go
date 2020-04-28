@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 
 	"github.com/nexlight101/gRPC_course/greet/greetpb"
@@ -28,6 +29,8 @@ func main() {
 
 	// send request to unary client
 	doUnary(c)
+	// doServerStreaming
+	doServerStreaming(c)
 }
 
 func doUnary(c greetpb.GreetServiceClient) {
@@ -42,4 +45,29 @@ func doUnary(c greetpb.GreetServiceClient) {
 		fmt.Printf("Error while calling Greet RPC: %v\n", err)
 	}
 	fmt.Println(res.GetResult())
+}
+
+func doServerStreaming(c greetpb.GreetServiceClient) {
+	fmt.Println("Sending the streaming Greet request to server")
+	req := &greetpb.GreetManyTimesRequest{Greeting: &greetpb.Greeting{
+		FirstName: "Hendrik",
+		LastName:  "Pienaar",
+	},
+	}
+
+	resStream, err := c.GreetManyTimes(context.Background(), req)
+	if err != nil {
+		log.Fatalf("Error while calling GreetManyTimes RPC: %v\n", err)
+	}
+
+	for {
+		msg, streamErr := resStream.Recv()
+		if streamErr == io.EOF {
+			break
+		}
+		if streamErr != nil {
+			log.Fatalf("Error while reading stream: %v\n", streamErr)
+		}
+		log.Printf("Response from GreetManyTimes: %v\n", msg.GetResult())
+	}
 }
