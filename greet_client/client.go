@@ -28,9 +28,14 @@ func main() {
 	fmt.Printf("Client activated: %v\n", c)
 
 	// send request to unary client
-	doUnary(c)
+	// doUnary(c)
+
 	// doServerStreaming
-	doServerStreaming(c)
+	// doServerStreaming(c)
+
+	// doStreamingClient
+	doClientStreaming(c)
+
 }
 
 func doUnary(c greetpb.GreetServiceClient) {
@@ -70,4 +75,46 @@ func doServerStreaming(c greetpb.GreetServiceClient) {
 		}
 		log.Printf("Response from GreetManyTimes: %v\n", msg.GetResult())
 	}
+}
+
+// Client streaming function
+func doClientStreaming(c greetpb.GreetServiceClient) {
+	fmt.Println("Sending the streaming Greet request to server")
+	requests := []*greetpb.LongGreetRequest{{
+		Greeting: &greetpb.Greeting{
+			FirstName: "Hendrik",
+			LastName:  "Pienaar",
+		},
+	},
+		{Greeting: &greetpb.Greeting{
+			FirstName: "Henriette",
+			LastName:  "Pienaar",
+		},
+		},
+		{Greeting: &greetpb.Greeting{
+			FirstName: "Danielle",
+			LastName:  "Pienaar",
+		},
+		},
+		{Greeting: &greetpb.Greeting{
+			FirstName: "Michele",
+			LastName:  "Pienaar",
+		},
+		},
+	}
+	stream, err := c.LongGreet(context.Background())
+	if err != nil {
+		log.Fatalf("Cannot send to server: %v\n", err)
+	}
+	for _, v := range requests {
+		sErr := stream.Send(v)
+		if sErr != nil {
+			log.Fatalf("Cannot send request: %v\n", sErr)
+		}
+	}
+	res, serErr := stream.CloseAndRecv()
+	if serErr != nil {
+		log.Fatalf("Cannot receive from server: %v\n", serErr)
+	}
+	fmt.Printf(" %v\n ", res.GetResult())
 }
