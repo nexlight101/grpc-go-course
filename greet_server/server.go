@@ -62,6 +62,30 @@ func (*server) GreetManyTimes(req *greetpb.GreetManyTimesRequest, stream greetpb
 	return nil
 }
 
+// BiDi Greet server
+func (*server) GreetEveryone(stream greetpb.GreetService_GreetEveryoneServer) error {
+	fmt.Println("GreetEveryone stream Request received in server")
+	for {
+		req, rErr := stream.Recv()
+		if rErr == io.EOF {
+			return nil
+		}
+		if rErr != nil {
+			log.Fatalf("Error while reading client stream: %v\n", rErr)
+			return rErr
+		}
+		firstName := req.GetGreeting().GetFirstName()
+		result := "Hello " + firstName + "! "
+		sErr := stream.Send(&greetpb.GreetEveryoneResponse{
+			Result: result,
+		})
+		if sErr != nil {
+			log.Fatalf("Error while sending data to client: %v\n", sErr)
+			return sErr
+		}
+	}
+}
+
 func main() {
 	fmt.Println("Hello from gRPC-Server")
 
