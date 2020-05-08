@@ -43,7 +43,8 @@ message GreetEveryoneRequest {
 message GreetEveryoneResponse {
     string result=1;
 }
-// define a GreetingWithDeadline 
+
+// define Unary GreetingWithDeadline messages
 
 message GreetWithDeadlineRequest{
     Greeting greeting=1;
@@ -66,6 +67,7 @@ service GreetService{
     rpc GreetEveryone(stream GreetEveryoneRequest) returns (stream GreetEveryoneResponse){};
 
     // Unary With Deadline
-    rpc GreetWithDeadline(GreetWithDeadlineRequest) returns (GreetWithDeadlineResponse) {}; 
+    rpc GreetWithDeadline(GreetWithDeadlineRequest) returns (GreetWithDeadlineResponse) {};
+     
 }
 
