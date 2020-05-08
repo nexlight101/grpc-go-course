@@ -153,5 +153,5 @@ func doUnaryWithDeadline(c greetpb.GreetServiceClient, timeout time.Duration) {
 		}
 		return
 	}
-	fmt.Printf("Response from GreeWithDeadline: %v\n", res.GetResult())
+	fmt.Printf("Response from GreetWithDeadline: %v\n", res.GetResult())
 }
