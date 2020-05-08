@@ -20,7 +20,7 @@ type server struct{}
 
 // Implement unary GreetWithDeadline API
 func (*server) GreetWithDeadline(ctx context.Context, req *greetpb.GreetWithDeadlineRequest) (*greetpb.GreetWithDeadlineResponse, error) {
-	fmt.Printf("GreetWithDeadline Request received in server %v", req)
+	fmt.Printf("GreetWithDeadline Request received in server %v\n", req.GetGreeting().GetFirstName())
 	for i := 0; i < 3; i++ {
 		// Check if the client cancelled yet
 		if ctx.Err() == context.Canceled {

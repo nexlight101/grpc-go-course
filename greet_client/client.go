@@ -137,7 +137,7 @@ func doUnaryWithDeadline(c greetpb.GreetServiceClient, timeout time.Duration) {
 	},
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 
 	defer cancel()
 
