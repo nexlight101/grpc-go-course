@@ -11,10 +11,32 @@ import (
 
 	"github.com/nexlight101/gRPC_course/greet/greetpb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // Create a server type
 type server struct{}
+
+// Implement unary GreetWithDeadline API
+func (*server) GreetWithDeadline(ctx context.Context, req *greetpb.GreetWithDeadlineRequest) (*greetpb.GreetWithDeadlineResponse, error) {
+	fmt.Printf("GreetWithDeadline Request received in server %v", req)
+	for i := 0; i < 3; i++ {
+		// Check if the client cancelled yet
+		if ctx.Err() == context.Canceled {
+			fmt.Println("The client cancelled the request")
+			return nil, status.Error(codes.Canceled, fmt.Sprintf("The client cancelled the request: %v\n", req))
+		}
+		time.Sleep(1 * time.Second)
+	}
+
+	fullName := req.Greeting.GetFirstName() + " " + req.Greeting.GetLastName()
+	result := "Hello " + fullName
+	res := &greetpb.GreetWithDeadlineResponse{
+		Result: result,
+	}
+	return res, nil
+}
 
 // LongGreet client stream
 func (*server) LongGreet(stream greetpb.GreetService_LongGreetServer) error {
@@ -80,4 +102,28 @@ func main() {
 		log.Fatalf("Failed to serve: %v", err)
 	}
 
+}
+
+// BiDi Greet server
+func (*server) GreetEveryone(stream greetpb.GreetService_GreetEveryoneServer) error {
+	fmt.Println("GreetEveryone stream Request received in server")
+	for {
+		req, rErr := stream.Recv()
+		if rErr == io.EOF {
+			return nil
+		}
+		if rErr != nil {
+			log.Fatalf("Error while reading client stream: %v\n", rErr)
+			return rErr
+		}
+		firstName := req.GetGreeting().GetFirstName()
+		result := "Hello " + firstName + "! "
+		sErr := stream.Send(&greetpb.GreetEveryoneResponse{
+			Result: result,
+		})
+		if sErr != nil {
+			log.Fatalf("Error while sending data to client: %v\n", sErr)
+			return sErr
+		}
+	}
 }

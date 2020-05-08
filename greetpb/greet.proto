@@ -36,13 +36,36 @@ message LongGreetRequest{
 message LongGreetResponse{
     string result=1;
 }
+// BiDi messages
+message GreetEveryoneRequest {
+    Greeting greeting=1;
+}
+message GreetEveryoneResponse {
+    string result=1;
+}
+// define a GreetingWithDeadline 
 
+message GreetWithDeadlineRequest{
+    Greeting greeting=1;
+}
+message GreetWithDeadlineResponse{
+    string result=1;
+}
 service GreetService{
+    
     // Unary 
     rpc Greet(GreetRequest) returns (GreetResponse) {};
+    
     // GreetManyTimes server stream
     rpc GreetManyTimes(GreetManyTimesRequest) returns (stream GreetManyTimesResponse) {};
+    
     //  LongGreet streaming client
     rpc LongGreet(stream LongGreetRequest) returns (LongGreetResponse) {};
+
+    // BiDi streaming
+    rpc GreetEveryone(stream GreetEveryoneRequest) returns (stream GreetEveryoneResponse){};
+
+    // Unary With Deadline
+    rpc GreetWithDeadline(GreetWithDeadlineRequest) returns (GreetWithDeadlineResponse) {}; 
 }
 
